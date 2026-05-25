@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商售后工单智能处理Agent | 专业Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // Tailwind 配置
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#4080FF',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                        light: '#C9CDD4'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .step-animate {
+                animation: fadeSlide 0.6s ease forwards;
+            }
+            .progress-animate {
+                animation: progress 1s ease-out forwards;
+            }
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes progress {
+            from { width: 0%; }
+            to { width: var(--width); }
+        }
+    </style>
+</head>
+<body class="bg-neutral min-h-screen font-sans text-dark">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white card-shadow sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa fa-robot text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">电商售后工单智能处理Agent</h1>
+            </div>
+            <span class="hidden md:block text-sm text-light">专业演示版 | 多Agent智能协作系统</span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- 项目简介 -->
+        <section class="mb-8 bg-white rounded-xl p-6 card-shadow">
+            <h2 class="text-lg font-bold mb-3 flex items-center gap-2">
+                <i class="fa fa-info-circle text-primary"></i>项目简介
+            </h2>
+            <p class="text-gray-600 leading-relaxed">
+                本系统基于<strong class="text-primary">多Agent协作+长链推理</strong>技术，实现电商售后工单全自动处理，解决人工响应慢、效率低、标准不统一等痛点，已实现工单处理全流程自动化闭环，大幅降低运营成本，提升用户体验。
+            </p>
+            <div class="flex flex-wrap gap-2 mt-4">
+                <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">智能意图识别</span>
+                <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">自动规则匹配</span>
+                <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">系统数据对接</span>
+                <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">智能回复生成</span>
+            </div>
+        </section>
+
+        <!-- 核心功能区 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- 左侧：工单输入 -->
+            <div class="bg-white rounded-xl p-6 card-shadow">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="fa fa-pencil-square-o text-primary"></i>工单输入
+                </h3>
+                <label class="block text-sm text-gray-500 mb-2">请输入用户售后问题描述</label>
+                <textarea 
+                    id="orderContent"
+                    class="w-full h-40 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    placeholder="示例：我买的衣服尺码不合适，想要退货，订单号：123456"></textarea>
+                <button 
+                    onclick="startProcess()"
+                    class="w-full mt-4 bg-primary hover:bg-primary/90 text-white py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa fa-cogs"></i>提交工单 · 智能处理
+                </button>
+            </div>
+
+            <!-- 中间：智能处理流程 -->
+            <div class="bg-white rounded-xl p-6 card-shadow">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="fa fa-exchange text-primary"></i>多Agent处理流程
+                </h3>
+                <div class="space-y-4" id="processSteps">
+                    <div class="step-item opacity-0" id="step1">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-search text-secondary"></i>
+                            <span class="font-medium">意图识别Agent</span>
+                        </div>
+                        <p class="text-sm text-gray-500 ml-6 mt-1">解析工单：识别诉求、订单信息、问题等级</p>
+                    </div>
+                    <div class="step-item opacity-0" id="step2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-book text-secondary"></i>
+                            <span class="font-medium">规则匹配Agent</span>
+                        </div>
+                        <p class="text-sm text-gray-500 ml-6 mt-1">对接知识库：生成合规售后处理方案</p>
+                    </div>
+                    <div class="step-item opacity-0" id="step3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-database text-secondary"></i>
+                            <span class="font-medium">系统核实Agent</span>
+                        </div>
+                        <p class="text-sm text-gray-500 ml-6 mt-1">自动查询订单/物流/财务实时状态</p>
+                    </div>
+                    <div class="step-item opacity-0" id="step4">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-comment text-secondary"></i>
+                            <span class="font-medium">回复生成Agent</span>
+                        </div>
+                        <p class="text-sm text-gray-500 ml-6 mt-1">生成标准化客服回复话术</p>
+                    </div>
+                    <div class="step-item opacity-0" id="step5">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-check-circle text-green-500"></i>
+                            <span class="font-medium">处理完成</span>
+                        </div>
+                        <p class="text-sm text-gray-500 ml-6 mt-1">工单已自动处理完毕</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：数据看板 -->
+            <div class="bg-white rounded-xl p-6 card-shadow">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="fa fa-bar-chart text-primary"></i>核心数据看板
+                </h3>
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>工单处理效率</span>
+                            <span class="font-bold text-primary">30秒/单</span>
+                        </div>
+                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full progress-animate" style="--width: 95%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>工单积压率下降</span>
+                            <span class="font-bold text-primary">95%</span>
+                        </div>
+                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full progress-animate" style="--width: 95%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>人工介入率</span>
+                            <span class="font-bold text-primary">15%</span>
+                        </div>
+                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full progress-animate" style="--width: 15%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>人力成本降低</span>
+                            <span class="font-bold text-primary">60%</span>
+                        </div>
+                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full progress-animate" style="--width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100">
+                        <p class="text-sm flex justify-between"><span>日均处理工单</span><span class="font-bold">5000+</span></p>
+                        <p class="text-sm flex justify-between mt-2"><span>每日Token消耗</span><span class="font-bold">280万</span></p>
+                        <p class="text-sm flex justify-between mt-2"><span>用户满意度提升</span><span class="font-bold text-green-500">+22%</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 处理结果 -->
+        <div id="resultBox" class="bg-white rounded-xl p-6 card-shadow hidden">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fa fa-file-text-o text-primary"></i>智能处理结果
+            </h3>
+            <div class="p-4 bg-neutral rounded-lg border border-gray-200">
+                <p id="resultContent" class="text-gray-700 leading-relaxed"></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="mt-12 py-6 text-center text-sm text-gray-400">
+        <p>电商售后智能处理Agent © 专业演示版 | 多Agent协作系统</p>
+    </footer>
+
+    <script>
+        // 售后回复库
+        const replyMap = {
+            "退货": "尊敬的用户，已为您自动生成退货申请！退货地址：XX省XX市XX区XXX街道，运费险自动生效，无需您承担运费，审核通过后1-3天完成退款。",
+            "退款": "尊敬的用户，已为您提交极速退款申请，无需退货，款项将在1分钟内原路返回您的支付账户，请留意账户通知。",
+            "尺码不合适": "尊敬的用户，您的商品尺码问题可免费换货，我们已自动匹配库存，顺丰上门取件，无需您支付任何费用。",
+            "投诉": "尊敬的用户，已为您升级高级客服处理，10分钟内专人联系您，同时为您发放20元无门槛补偿券。",
+            "质量问题": "尊敬的用户，已核实商品质量问题，为您提供全额退款+补发新商品服务，全程无需您承担任何费用。"
+        };
+
+        // 重置所有步骤
+        function resetSteps() {
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.classList.remove('opacity-100', 'step-animate');
+                item.classList.add('opacity-0');
+            });
+            document.getElementById('resultBox').classList.add('hidden');
+        }
+
+        // 启动处理流程
+        function startProcess() {
+            const content = document.getElementById('orderContent').value.trim();
+            if (!content) {
+                alert('请输入售后工单内容！');
+                return;
+            }
+
+            resetSteps();
+            
+            // 分步动画展示流程
+            setTimeout(() => showStep(1), 500);
+            setTimeout(() => showStep(2), 1200);
+            setTimeout(() => showStep(3), 1900);
+            setTimeout(() => showStep(4), 2600);
+            setTimeout(() => {
+                showStep(5);
+                showResult(content);
+            }, 3300);
+        }
+
+        // 展示步骤
+        function showStep(num) {
+            const step = document.getElementById(`step${num}`);
+            step.classList.remove('opacity-0');
+            step.classList.add('opacity-100', 'step-animate');
+        }
+
+        // 展示处理结果
+        function showResult(content) {
+            let reply = "尊敬的用户，您的售后问题已智能处理完毕，我们将第一时间为您解决问题！";
+            // 关键词匹配
+            for (let key in replyMap) {
+                if (content.includes(key)) {
+                    reply = replyMap[key];
+                    break;
+                }
+            }
+            document.getElementById('resultContent').innerText = reply;
+            document.getElementById('resultBox').classList.remove('hidden');
+            document.getElementById('resultBox').classList.add('step-animate');
+        }
+    </script>
+</body>
+</html>
